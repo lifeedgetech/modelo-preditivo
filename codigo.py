@@ -9,6 +9,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.metrics import Recall
 
 # Defina o caminho para o diretório das imagens
 data_dir = 'imagens\parkinsons_dataset'
@@ -49,10 +50,10 @@ model = Sequential([
     Flatten(),
     Dense(128, activation='relu'),
     Dropout(0.5),
-    Dense(2, activation='softmax')
+    Dense(1, activation='sigmoid')
 ])
 
-model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=[Recall()])
 model.summary()
 
 datagen = ImageDataGenerator(
@@ -64,7 +65,7 @@ datagen = ImageDataGenerator(
 
 datagen.fit(X_train)
 
-history = model.fit(datagen.flow(X_train, y_train, batch_size=32), epochs=20, validation_data=(X_test, y_test))
+history = model.fit(datagen.flow(X_train, y_train, batch_size=32), epochs=50, validation_data=(X_test, y_test))
 
 # Avaliar o modelo
 loss, accuracy = model.evaluate(X_test, y_test)
@@ -75,7 +76,7 @@ print(f"Accuracy: {accuracy}")
 plt.figure(figsize=(12, 4))
 
 plt.subplot(1, 2, 1)
-plt.plot(history.history['accuracy'], label='Acurácia de Treinamento')
+plt.plot(history.history['Recall'], label='Acurácia de Treinamento')
 plt.plot(history.history['val_accuracy'], label='Acurácia de Validação')
 plt.xlabel('Época')
 plt.ylabel('Acurácia')
