@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import numpy as np
 import tensorflow as tf
@@ -7,6 +8,15 @@ from tensorflow.keras.preprocessing import image
 import io
 
 app = FastAPI()
+
+# Permitir CORS (qualquer origem, ou configure a origem permitida)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Ou substitua "*" por "http://localhost:8080"
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Carregar o modelo treinado
 model = load_model('parkinson_mri_cnn_model_2.h5')
@@ -29,7 +39,7 @@ async def predict(file: UploadFile):
     prediction = model.predict(img)
     
     result = float(prediction[0][0])
-    
+
     return JSONResponse(content={"result": result}, status_code=200)
 
 if __name__ == '__main__':
