@@ -13,7 +13,7 @@ from tensorflow.keras.metrics import Recall
 from tensorflow.keras.losses import BinaryCrossentropy 
 
 # Defina o caminho para o diretório das imagens
-data_dir = 'imagens\parkinsons_dataset'
+data_dir = 'imagens/parkinsons_dataset'
 img_size = (128, 128)  # Redimensione as imagens para um tamanho fixo
 
 # Função para carregar imagens
@@ -51,7 +51,7 @@ model = Sequential([
     Flatten(),
     Dense(128, activation='relu'),
     Dropout(0.5),
-    Dense(1, activation='sigmoid')
+    Dense(2, activation='softmax')
 ])
 
 model.compile(optimizer=Adam(learning_rate=0.001), loss=BinaryCrossentropy(), metrics=[Recall()])
@@ -66,7 +66,7 @@ datagen = ImageDataGenerator(
 
 datagen.fit(X_train)
 
-history = model.fit(datagen.flow(X_train, y_train, batch_size=32), epochs=50, validation_data=(X_test, y_test))
+history = model.fit(datagen.flow(X_train, y_train, batch_size=32), epochs=2, validation_data=(X_test, y_test))
 
 # Avaliar o modelo
 loss, accuracy = model.evaluate(X_test, y_test)
@@ -74,22 +74,22 @@ print(f"Loss: {loss}")
 print(f"Accuracy: {accuracy}")
 
 # Plotar a acurácia e perda
-plt.figure(figsize=(12, 4))
+# plt.figure(figsize=(12, 4))
+print(history)
+# plt.subplot(1, 2, 1)
+# plt.plot(history.history['Recall'], label='Acurácia de Treinamento')
+# plt.plot(history.history['val_accuracy'], label='Acurácia de Validação')
+# plt.xlabel('Época')
+# plt.ylabel('Acurácia')
+# plt.legend()
 
-plt.subplot(1, 2, 1)
-plt.plot(history.history['Recall'], label='Acurácia de Treinamento')
-plt.plot(history.history['val_accuracy'], label='Acurácia de Validação')
-plt.xlabel('Época')
-plt.ylabel('Acurácia')
-plt.legend()
+# plt.subplot(1, 2, 2)
+# plt.plot(history.history['loss'], label='Perda de Treinamento')
+# plt.plot(history.history['val_loss'], label='Perda de Validação')
+# plt.xlabel('Época')
+# plt.ylabel('Perda')
+# plt.legend()
 
-plt.subplot(1, 2, 2)
-plt.plot(history.history['loss'], label='Perda de Treinamento')
-plt.plot(history.history['val_loss'], label='Perda de Validação')
-plt.xlabel('Época')
-plt.ylabel('Perda')
-plt.legend()
+# plt.show()
 
-plt.show()
-
-model.save('parkinson_mri_cnn_model.h5')
+model.save('parkinson_mri_cnn_model_2.h5')

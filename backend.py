@@ -9,7 +9,7 @@ import io
 app = FastAPI()
 
 # Carregar o modelo treinado
-model = load_model('parkinson_mri_cnn_model.h5', custom_objects={'loss': CustomLoss(reduction='none')})
+model = load_model('parkinson_mri_cnn_model_2.h5')
 
 
 @app.post("/predict")
@@ -28,8 +28,9 @@ async def predict(file: UploadFile):
     # Fazer a predição
     prediction = model.predict(img)
     
+    result = float(prediction[0][0])
     
-    return JSONResponse(content={"result": prediction[0][0]}, status_code=200)
+    return JSONResponse(content={"result": result}, status_code=200)
 
 if __name__ == '__main__':
     import uvicorn
