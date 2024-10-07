@@ -11,6 +11,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.metrics import Recall
 from tensorflow.keras.losses import BinaryCrossentropy 
+import cv2
+import plantcv as pcv
+from collections import Counter
 
 # Defina o caminho para o diretório das imagens
 data_dir = 'imagens/parkinsons_dataset'
@@ -31,7 +34,64 @@ def load_images(data_dir, img_size):
             labels.append(label)
     return np.array(images), np.array(labels)
 
+def balance_dataset(images, labels, img_size):
+    label_counts = Counter(labels)
+    max_count = max(label_counts.values())
+    balanced_images = []
+    balanced_labels = []
+
+    for label in label_counts:
+        class_images = images[labels == label]
+        class_count = len(class_images)
+        
+        if class_count < max_count:
+            augmented_images = augment_images(class_images, max_count - class_count, img_size)
+            balanced_images.extend(augmented_images)
+            balanced_labels.extend([label] * (max_count - class_count))
+        
+        balanced_images.extend(class_images)
+        balanced_labels.extend([label] * class_count)
+
+    return np.array(balanced_images), np.array(balanced_labels)
+
+def augment_images(images, num_augmentations, img_size):
+    augmented_images = []
+    for _ in range(num_augmentations):
+        idx = np.random.randint(0, len(images))
+        img = images[idx].copy()
+        
+        # Apply random augmentations
+        if np.random.rand() < 0.5:
+            img = cv2.GaussianBlur(img, (15, 15), 0)
+        
+        if np.random.rand() < 0.5:
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        
+        if np.random.rand() < 0.5:
+            _, img = cv2.threshold(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), 128, 255, cv2.THRESH_BINARY)
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        
+        if np.random.rand() < 0.5:
+            pcv.params.debug = None
+            s = pcv.rgb2gray_hsv(rgb_img=img, channel="s")
+            img = pcv.threshold.binary(gray_img=s, threshold=125, object_type='light')
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        
+        if np.random.rand() < 0.5:
+            contours, _ = cv2.findContours(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            mask = np.zeros(img.shape[:2], dtype=np.uint8)
+            cv2.drawContours(mask, contours, -1, (255), thickness=cv2.FILLED)
+            img = cv2.bitwise_and(img, img, mask=mask)
+        
+        img = cv2.resize(img, img_size)
+        augmented_images.append(img)
+    
+    return augmented_images
+
+# Load and balance the dataset
 images, labels = load_images(data_dir, img_size)
+images, labels = balance_dataset(images, labels, img_size)
 
 # Codificar os rótulos
 lb = LabelBinarizer()
