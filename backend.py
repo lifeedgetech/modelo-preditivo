@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # Carregar o modelo treinado
-model = load_model('parkinson_mri_cnn_model_2.h5')
+model = load_model('parkinson_mri_cnn_model1.h5')
 
 
 @app.post("/predict")
