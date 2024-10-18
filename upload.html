@@ -1,66 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Modelo Preditivo | LET</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-  </head>
-  <body class="up">
+    <style>
+        /* CSS para centralizar a imagem, nome do arquivo e o botão */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centraliza horizontalmente */
+            justify-content: center;
+            margin-top: 20px; /* Ajusta o espaço acima */
+        }
+
+        #image-preview {
+            display: none; /* Mantém a imagem oculta até que um arquivo seja carregado */
+            width: 300px; /* Ajuste este valor para definir a largura desejada */
+            height: auto; /* Mantém a proporção da imagem */
+            margin-top: 10px; /* Espaçamento entre o nome do arquivo e a imagem */
+            border-radius: 10px; /* Adiciona bordas arredondadas */
+        }
+
+        .file-name {
+            font-size: 14px;
+            margin-bottom: 10px; /* Espaçamento entre o nome do arquivo e a imagem */
+            text-align: center;
+        }
+
+        .result-text {
+            font-size: 24px; /* Ajuste o tamanho da fonte como desejar */
+            color: #333; /* Altere a cor conforme necessário */
+            margin-top: 20px; /* Espaço acima do resultado */
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="up">
     <h1 class="text">Life Edge Technologies</h1>
     <div class="container2">
-      <div class="container3">
-        <h2 class="env">Envio da Imagem</h2>
-      </div>
-      <!-- O formulário agora envia para o endpoint /predict via POST -->
-      <form id="upload-form" action="https://automatic-funicular-v9x5654r77g35xq-8000.app.github.dev/predict" method="post" enctype="multipart/form-data">
-        <label class="botao" for="file-upload">Selecionar Imagem</label>
-        <input type="file" id="file-upload" name="file" accept="image/*">
-        <div class="file-name" id="file-name"></div>
-        <div class="container4">
-          <button class="botao1" type="submit">Enviar</button>
+        <div class="container3">
+            <h2 class="env">Envio da Imagem</h2>
+            <!-- O formulário agora envia para o endpoint /predict via POST -->
+            <form id="upload-form" action="https://literate-space-meme-jvxgjg67p66fq455-8000.app.github.dev/predict" method="post" enctype="multipart/form-data">
+                <div class="image-upload-container">
+                    <label class="botao" for="file-upload">Selecionar Imagem</label>
+                    <input type="file" id="file-upload" name="file" accept="image/*" style="display: none;">
+                    <!-- Nome do arquivo e pré-visualização da imagem -->
+                    <div class="file-name" id="file-name"></div>
+                </div>
+                <div class="container4">
+                    <button class="botao1" type="submit">Enviar</button>
+                </div>
+            </form>
+            <!-- Exibe o resultado da previsão -->
+            <div id="result" class="result-text"></div>
         </div>
-      </form>
-      <!-- Exibe o resultado da previsão -->
-      <div id="result"></div>
+        <div class="imagem">
+            <img id="image-preview" src="#" alt="Pré-visualização da imagem" />
+        </div>
     </div>
 
     <script>
-      const fileUpload = document.getElementById('file-upload');
-      const fileName = document.getElementById('file-name');
-      const uploadForm = document.getElementById('upload-form');
-      const resultDiv = document.getElementById('result');
+        const fileUpload = document.getElementById('file-upload');
+        const fileName = document.getElementById('file-name');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadForm = document.getElementById('upload-form');
+        const resultDiv = document.getElementById('result');
+        const botao = document.querySelector('.botao');
 
-      fileUpload.addEventListener('change', function () {
-          fileName.textContent = this.files[0].name;
-      });
+        // Clique no botão "Selecionar Imagem" abre o input file
+        botao.addEventListener('click', (event) => {
+            event.preventDefault(); // Impede comportamento padrão do botão
+            if (!fileUpload.clicked) { // Verifica se o input já foi clicado
+                fileUpload.clicked = true; // Marca o input como clicado
+                fileUpload.click();
+            }
+        });
 
-      // Modifica o comportamento do form para exibir a resposta sem recarregar a página
-      uploadForm.addEventListener('submit', async function (event) {
-        event.preventDefault(); // Impede o envio tradicional do form
-        const formData = new FormData(uploadForm);
+        // Exibe o nome do arquivo e a pré-visualização da imagem
+        fileUpload.addEventListener('change', function () {
+            const file = this.files[0];
+            fileName.textContent = file.name;
 
-        try {
-          const response = await fetch(uploadForm.action, {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            
-            // Converte o valor da predição em porcentagem
-            const probability = data.result * 100;
-            
-            // Exibe o resultado formatado com duas casas decimais
-            resultDiv.textContent = 'Probabilidade de ter Parkinson: ' + probability.toFixed(2) + '%';
-          } else {
-            resultDiv.textContent = 'Erro ao fazer a predição';
-          }
-        } catch (error) {
-          resultDiv.textContent = 'Erro: ' + error.message;
-        }
-      });
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block'; // Exibe a imagem
+                }
+
+                reader.readAsDataURL(file); // Lê o arquivo como uma URL de dados
+            }
+        });
+
+        // Modifica o comportamento do form para exibir a resposta sem recarregar a página
+        uploadForm.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Impede o envio tradicional do form
+            const formData = new FormData(uploadForm);
+
+            try {
+                const response = await fetch(uploadForm.action, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Converte o valor da predição em porcentagem
+                    const probability = data.result * 100;
+                    
+                    // Exibe o resultado formatado com duas casas decimais
+                    resultDiv.textContent = 'Probabilidade de ter Parkinson: ' + probability.toFixed(2) + '%';
+                } else {
+                    resultDiv.textContent = 'Erro ao fazer a predição';
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Erro: ' + error.message;
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
