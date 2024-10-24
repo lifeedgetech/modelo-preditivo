@@ -12,7 +12,6 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.metrics import Recall
 from tensorflow.keras.losses import BinaryCrossentropy 
 import cv2
-import plantcv as pcv
 from collections import Counter
 
 # Defina o caminho para o diretório das imagens
@@ -54,11 +53,11 @@ def balance_dataset(images, labels, img_size):
 
     return np.array(balanced_images), np.array(balanced_labels)
 
-def augment_images(images, num_augmentations, img_size):
+def augment_images(class_images, max_count, img_size):
     augmented_images = []
-    for _ in range(num_augmentations):
-        idx = np.random.randint(0, len(images))
-        img = images[idx].copy()
+    for _ in range(max_count):
+        idx = np.random.randint(0, len(class_images))
+        img = class_images[idx].copy()
         
         # Apply random augmentations
         if np.random.rand() < 0.5:
@@ -72,14 +71,12 @@ def augment_images(images, num_augmentations, img_size):
             _, img = cv2.threshold(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), 128, 255, cv2.THRESH_BINARY)
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         
-        if np.random.rand() < 0.5:
-            pcv.params.debug = None
-            s = pcv.rgb2gray_hsv(rgb_img=img, channel="s")
-            img = pcv.threshold.binary(gray_img=s, threshold=125, object_type='light')
-            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         
         if np.random.rand() < 0.5:
-            contours, _ = cv2.findContours(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            # Converte a imagem para o tipo CV_8UC1, se necessário
+            gray_img = cv2.convertScaleAbs(gray_img)
+            contours, _ = cv2.findContours(gray_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             mask = np.zeros(img.shape[:2], dtype=np.uint8)
             cv2.drawContours(mask, contours, -1, (255), thickness=cv2.FILLED)
             img = cv2.bitwise_and(img, img, mask=mask)
@@ -91,7 +88,8 @@ def augment_images(images, num_augmentations, img_size):
 
 # Load and balance the dataset
 images, labels = load_images(data_dir, img_size)
-images, labels = balance_dataset(images, labels, img_size)
+
+# images, labels = balance_dataset(images, labels, img_size)
 
 # Codificar os rótulos
 lb = LabelBinarizer()
@@ -126,7 +124,7 @@ datagen = ImageDataGenerator(
 
 datagen.fit(X_train)
 
-history = model.fit(datagen.flow(X_train, y_train, batch_size=32), epochs=2, validation_data=(X_test, y_test))
+history = model.fit(datagen.flow(X_train, y_train, batch_size=32), epochs=50, validation_data=(X_test, y_test))
 
 # Avaliar o modelo
 loss, accuracy = model.evaluate(X_test, y_test)
@@ -152,4 +150,4 @@ print(history)
 
 # plt.show()
 
-model.save('parkinson_mri_cnn_model_2.h5')
+model.save('parkinson_mri_cnn_model_3.h5')

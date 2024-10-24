@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # Carregar o modelo treinado
-model = load_model('parkinson_mri_cnn_model_2.h5')
+model = load_model('parkinson_mri_cnn_model_3.h5')
 
 
 @app.post("/predict")
@@ -38,8 +38,8 @@ async def predict(file: UploadFile):
     # Fazer a predição
     prediction = model.predict(img)
     
-    result = float(prediction[0][0])
-
+    result = float(prediction[0][1])
+    print(prediction)
     return JSONResponse(content={"result": result}, status_code=200)
 
 if __name__ == '__main__':
