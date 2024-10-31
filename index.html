@@ -10,30 +10,92 @@
         .image-upload-container {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centraliza horizontalmente */
+            align-items: center;
             justify-content: center;
-            margin-top: 20px; /* Ajusta o espaço acima */
+            margin-top: 20px;
         }
 
         #image-preview {
-            display: none; /* Mantém a imagem oculta até que um arquivo seja carregado */
-            width: 300px; /* Ajuste este valor para definir a largura desejada */
-            height: auto; /* Mantém a proporção da imagem */
-            margin-top: 10px; /* Espaçamento entre o nome do arquivo e a imagem */
-            border-radius: 10px; /* Adiciona bordas arredondadas */
+            display: none;
+            width: 300px;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 10px;
         }
 
         .file-name {
             font-size: 14px;
-            margin-bottom: 10px; /* Espaçamento entre o nome do arquivo e a imagem */
+            margin-bottom: 10px;
             text-align: center;
         }
 
         .result-text {
-            font-size: 24px; /* Ajuste o tamanho da fonte como desejar */
-            color: #333; /* Altere a cor conforme necessário */
-            margin-top: 20px; /* Espaço acima do resultado */
+            color: #333;
+            margin-top: 20px;
             text-align: center;
+            font-size: 3rem;
+            padding: 18px 0;
+        }
+
+        /* Estilo do modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding-top: 0px;
+            padding-bottom: 60px;
+            border: 1px solid #888;
+            border-radius: 15px; /* Borda arredondada */
+            width: 60%; /* Altere este valor para tornar o modal mais estreito */
+            text-align: center;
+            position: relative; /* Para posicionar o botão de fechar */
+        }
+
+
+        .close {
+            color: #aaa;
+            position: absolute; /* Posição absoluta dentro da modal-content */
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Estilo para dividir o texto no modal */
+        .modal-part {
+            margin: 10px 0; /* Espaçamento entre as partes do texto */
+            padding-top: 10px;
+            padding-bottom: 20px;
+            color: #333;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 18px 0;
+            font-weight: bold;
+        }
+        #modal-result-value {
+            font-size: 3rem;
+        }
+        #modal-result-title {
+            padding-top: 30px;
         }
     </style>
 </head>
@@ -42,19 +104,16 @@
     <div class="container2">
         <div class="container3">
             <h2 class="env">Envio da Imagem</h2>
-            <!-- O formulário agora envia para o endpoint /predict via POST -->
-            <form id="upload-form" action="https://literate-space-meme-jvxgjg67p66fq455-8000.app.github.dev/predict" method="post" enctype="multipart/form-data">
+            <form id="upload-form" action="https://lifeless-owl-5g4g97qr6g54hv6p5-8000.app.github.dev/predict" method="post" enctype="multipart/form-data">
                 <div class="image-upload-container">
                     <label class="botao" for="file-upload">Selecionar Imagem</label>
                     <input type="file" id="file-upload" name="file" accept="image/*" style="display: none;">
-                    <!-- Nome do arquivo e pré-visualização da imagem -->
                     <div class="file-name" id="file-name"></div>
                 </div>
                 <div class="container4">
                     <button class="botao1" type="submit">Enviar</button>
                 </div>
             </form>
-            <!-- Exibe o resultado da previsão -->
             <div id="result" class="result-text"></div>
         </div>
         <div class="imagem">
@@ -62,24 +121,37 @@
         </div>
     </div>
 
+<!-- Modal para exibir o resultado -->
+<div id="resultModal" class="modal">
+    <div class="modal-content" style="margin: 10% auto;"> <!-- Ajuste a margem aqui -->
+        <div class="modal-header" style="background: linear-gradient(135deg, #B795F8, #A3EAED); height: 60px; border-radius: 15px 15px 0 0; padding-top: 0px;"> <!-- Ajuste a altura se necessário -->
+            <span class="close" style="color: #fff; font-size: 28px; font-weight: bold; float: right; margin-right: 15px; cursor: pointer;">&times;</span>
+        </div>
+        <div class="modal-part" id="modal-result-title"></div>
+        <div class="modal-part" id="modal-result-value"></div>
+    </div>
+</div>
+
+
     <script>
         const fileUpload = document.getElementById('file-upload');
         const fileName = document.getElementById('file-name');
         const imagePreview = document.getElementById('image-preview');
         const uploadForm = document.getElementById('upload-form');
-        const resultDiv = document.getElementById('result');
+        const resultModal = document.getElementById('resultModal');
+        const modalResultTitle = document.getElementById('modal-result-title');
+        const modalResultValue = document.getElementById('modal-result-value');
+        const closeModal = document.querySelector('.close');
         const botao = document.querySelector('.botao');
 
-        // Clique no botão "Selecionar Imagem" abre o input file
         botao.addEventListener('click', (event) => {
-            event.preventDefault(); // Impede comportamento padrão do botão
-            if (!fileUpload.clicked) { // Verifica se o input já foi clicado
-                fileUpload.clicked = true; // Marca o input como clicado
+            event.preventDefault();
+            if (!fileUpload.clicked) {
+                fileUpload.clicked = true;
                 fileUpload.click();
             }
         });
 
-        // Exibe o nome do arquivo e a pré-visualização da imagem
         fileUpload.addEventListener('change', function () {
             const file = this.files[0];
             fileName.textContent = file.name;
@@ -89,16 +161,15 @@
 
                 reader.onload = function (e) {
                     imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block'; // Exibe a imagem
+                    imagePreview.style.display = 'block';
                 }
 
-                reader.readAsDataURL(file); // Lê o arquivo como uma URL de dados
+                reader.readAsDataURL(file);
             }
         });
 
-        // Modifica o comportamento do form para exibir a resposta sem recarregar a página
         uploadForm.addEventListener('submit', async function (event) {
-            event.preventDefault(); // Impede o envio tradicional do form
+            event.preventDefault();
             const formData = new FormData(uploadForm);
 
             try {
@@ -109,17 +180,29 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                   
-                    // Converte o valor da predição em porcentagem
                     const probability = data.result * 100;
-                   
-                    // Exibe o resultado formatado com duas casas decimais
-                    resultDiv.textContent = 'Probabilidade de ter Parkinson: ' + probability.toFixed(2) + '%';
+                    modalResultTitle.textContent = 'Probabilidade de desenvolver Parkinson nos próximos 10 anos:';
+                    modalResultValue.textContent = probability.toFixed(2) + '%';
+                    resultModal.style.display = 'block';
                 } else {
-                    resultDiv.textContent = 'Erro ao fazer a predição';
+                    modalResultTitle.textContent = 'Erro ao fazer a predição';
+                    modalResultValue.textContent = '';
+                    resultModal.style.display = 'block';
                 }
             } catch (error) {
-                resultDiv.textContent = 'Erro: ' + error.message;
+                modalResultTitle.textContent = 'Erro:';
+                modalResultValue.textContent = error.message;
+                resultModal.style.display = 'block';
+            }
+        });
+
+        closeModal.addEventListener('click', function () {
+            resultModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === resultModal) {
+                resultModal.style.display = 'none';
             }
         });
     </script>

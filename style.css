@@ -76,6 +76,10 @@ body2 {
   padding-bottom: 15px;
   justify-content: space-evenly;
 }
+.container4:target {
+    opacity: 1;
+    pointer-events: auto;
+}
 .file-name {
     margin-top: 10px;
     font-size: 14px;
