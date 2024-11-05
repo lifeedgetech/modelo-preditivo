@@ -1,210 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <title>Modelo Preditivo | LET</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* CSS para centralizar a imagem, nome do arquivo e o botão */
-        .image-upload-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        #image-preview {
-            display: none;
-            width: 300px;
-            height: auto;
-            margin-top: 10px;
-            border-radius: 10px;
-        }
-
-        .file-name {
-            font-size: 14px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .result-text {
-            color: #333;
-            margin-top: 20px;
-            text-align: center;
-            font-size: 3rem;
-            padding: 18px 0;
-        }
-
-        /* Estilo do modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding-top: 0px;
-            padding-bottom: 60px;
-            border: 1px solid #888;
-            border-radius: 15px; /* Borda arredondada */
-            width: 60%; /* Altere este valor para tornar o modal mais estreito */
-            text-align: center;
-            position: relative; /* Para posicionar o botão de fechar */
-        }
-
-
-        .close {
-            color: #aaa;
-            position: absolute; /* Posição absoluta dentro da modal-content */
-            top: 10px;
-            right: 15px;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Estilo para dividir o texto no modal */
-        .modal-part {
-            margin: 10px 0; /* Espaçamento entre as partes do texto */
-            padding-top: 10px;
-            padding-bottom: 20px;
-            color: #333;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 1.5rem;
-            padding: 18px 0;
-            font-weight: bold;
-        }
-        #modal-result-value {
-            font-size: 3rem;
-        }
-        #modal-result-title {
-            padding-top: 30px;
-        }
-    </style>
 </head>
-<body class="up">
-    <h1 class="text">Life Edge Technologies</h1>
-    <div class="container2">
-        <div class="container3">
-            <h2 class="env">Envio da Imagem</h2>
-            <form id="upload-form" action="https://lifeless-owl-5g4g97qr6g54hv6p5-8000.app.github.dev/predict" method="post" enctype="multipart/form-data">
-                <div class="image-upload-container">
-                    <label class="botao" for="file-upload">Selecionar Imagem</label>
-                    <input type="file" id="file-upload" name="file" accept="image/*" style="display: none;">
-                    <div class="file-name" id="file-name"></div>
-                </div>
-                <div class="container4">
-                    <button class="botao1" type="submit">Enviar</button>
-                </div>
-            </form>
-            <div id="result" class="result-text"></div>
-        </div>
-        <div class="imagem">
-            <img id="image-preview" src="#" alt="Pré-visualização da imagem" />
-        </div>
+<body>
+    <div class="container">
+        <div class="content first-content">
+            <div class="first-column">
+                <h2 class="title title-primary">Bem-vindo de volta!</h2>
+                <p class="description description-primary">Para ficar conectado com a gente,</p>
+                <p class="description description-primary">por favor, faça o login com o seu CRM</p>
+                <button id="signin" class="btn btn-primary">entrar</button>
+            </div>    
+            <div class="second-column">
+                <h2 class="title title-second">Crie sua conta</h2>
+                <p class="description description-second">use seu CRM abaixo:</p>
+                <form class="form">
+                    <label class="label-input" for="">
+                        <i class="far fa-user icon-modify"></i>
+                        <input type="text" placeholder="Nome">
+                    </label>
+                    
+                    <label class="label-input" for="">
+                        <i class="fas fa-stethoscope icon-modify"></i>
+                        <input type="email" placeholder="CRM">
+                    </label>
+                    
+                    <label class="label-input" for="">
+                        <i class="fas fa-lock icon-modify"></i>
+                        <input type="password" placeholder="Senha">
+                    </label>
+                </form>
+                <a href="upload.html" >
+                    <button class="btn btn-second">criar</button>
+                </a>
+                    
+            </div><!-- second column -->
+        </div><!-- first content -->
+        <div class="content second-content">
+            <div class="first-column">
+                <h2 class="title title-primary">Olá, Doutor(a)!</h2>
+                <p class="description description-primary">Bem Vindo!</p>
+                <button id="signup" class="btn btn-primary">criar conta</button>
+            </div>
+            <div class="second-column">
+                <h2 class="title title-second">Acesse</h2>
+                <p class="description description-second">Entre com seu CRM:</p>
+                <form class="form">
+                
+                    <label class="label-input" for="">
+                        <i class="fas fa-stethoscope icon-modify"></i>
+                        <input type="email" placeholder="CRM">
+                    </label>
+                
+                    <label class="label-input" for="">
+                        <i class="fas fa-lock icon-modify"></i>
+                        <input type="password" placeholder="Senha">
+                    </label>
+                
+                    <a class="password" href="#">esqueceu sua senha?</a>
+                </form>
+                <a href="upload.html" >
+                    <button class="btn btn-second">entrar</button>
+                </a>
+            </div><!-- second column -->
+        </div><!-- second-content -->
     </div>
-
-<!-- Modal para exibir o resultado -->
-<div id="resultModal" class="modal">
-    <div class="modal-content" style="margin: 10% auto;"> <!-- Ajuste a margem aqui -->
-        <div class="modal-header" style="background: linear-gradient(135deg, #B795F8, #A3EAED); height: 60px; border-radius: 15px 15px 0 0; padding-top: 0px;"> <!-- Ajuste a altura se necessário -->
-            <span class="close" style="color: #fff; font-size: 28px; font-weight: bold; float: right; margin-right: 15px; cursor: pointer;">&times;</span>
-        </div>
-        <div class="modal-part" id="modal-result-title"></div>
-        <div class="modal-part" id="modal-result-value"></div>
-    </div>
-</div>
-
-
-    <script>
-        const fileUpload = document.getElementById('file-upload');
-        const fileName = document.getElementById('file-name');
-        const imagePreview = document.getElementById('image-preview');
-        const uploadForm = document.getElementById('upload-form');
-        const resultModal = document.getElementById('resultModal');
-        const modalResultTitle = document.getElementById('modal-result-title');
-        const modalResultValue = document.getElementById('modal-result-value');
-        const closeModal = document.querySelector('.close');
-        const botao = document.querySelector('.botao');
-
-        botao.addEventListener('click', (event) => {
-            event.preventDefault();
-            if (!fileUpload.clicked) {
-                fileUpload.clicked = true;
-                fileUpload.click();
-            }
-        });
-
-        fileUpload.addEventListener('change', function () {
-            const file = this.files[0];
-            fileName.textContent = file.name;
-
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                }
-
-                reader.readAsDataURL(file);
-            }
-        });
-
-        uploadForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            const formData = new FormData(uploadForm);
-
-            try {
-                const response = await fetch(uploadForm.action, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const probability = data.result * 100;
-                    modalResultTitle.textContent = 'Probabilidade de desenvolver Parkinson nos próximos 10 anos:';
-                    modalResultValue.textContent = probability.toFixed(2) + '%';
-                    resultModal.style.display = 'block';
-                } else {
-                    modalResultTitle.textContent = 'Erro ao fazer a predição';
-                    modalResultValue.textContent = '';
-                    resultModal.style.display = 'block';
-                }
-            } catch (error) {
-                modalResultTitle.textContent = 'Erro:';
-                modalResultValue.textContent = error.message;
-                resultModal.style.display = 'block';
-            }
-        });
-
-        closeModal.addEventListener('click', function () {
-            resultModal.style.display = 'none';
-        });
-
-        window.addEventListener('click', function (event) {
-            if (event.target === resultModal) {
-                resultModal.style.display = 'none';
-            }
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
